@@ -1,0 +1,28 @@
+@import url('./reset.css');
+
+ul {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.gallery-list {
+  max-width: 360px;
+}
+
+.gallery-image {
+  transition: transform ease 250ms;
+}
+
+.gallery-image:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
