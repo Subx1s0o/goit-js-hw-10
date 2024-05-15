@@ -1,7 +1,7 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-const delay = document.querySelector('.delay');
+const delay = document.querySelector('input[type="number"]');
 const radio = document.querySelectorAll('input[type="radio"][name="state"]');
 
 document.querySelector('form').addEventListener('submit', e => {
