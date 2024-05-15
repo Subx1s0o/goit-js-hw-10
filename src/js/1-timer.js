@@ -22,6 +22,10 @@ function convertMs(ms) {
 
 const mainInp = document.querySelector('#datetime-picker');
 const button = document.querySelector('button[data-start]');
+const spanDays = document.querySelector('span[data-days]');
+const spanHours = document.querySelector('span[data-hours]');
+const spanMinutes = document.querySelector('span[data-minutes]');
+const spanSeconds = document.querySelector('span[data-seconds]');
 
 let userSelectedDate;
 
@@ -33,36 +37,31 @@ const options = {
 
   onClose(SelectedDate) {
     userSelectedDate = SelectedDate[0];
+    if (userSelectedDate !== undefined) {
+      button.removeAttribute('disabled');
+    }
   },
 };
 
 flatpickr(mainInp, options);
 
 function setTimer(userDate) {
-  const isFutureDate =
-    userDate !== undefined && userDate.getTime() >= new Date().getTime();
+  const todayDate = new Date();
+  let timeDiff;
 
-  if (isFutureDate) {
+  if (userDate !== undefined && userDate.getTime() >= todayDate.getTime()) {
+    button.setAttribute('disabled', '');
+    updateDate(userDate);
+
     const timer = setInterval(() => {
       const todayDate = new Date();
-      const timeDiff = Math.max(userDate.getTime() - todayDate.getTime(), 0);
-      const { days, hours, minutes, seconds } = convertMs(timeDiff);
+      timeDiff = Math.max(userDate.getTime() - todayDate.getTime(), 0);
 
-      document.querySelector('span[data-days]').textContent = days
-        .toString()
-        .padStart(2, '0');
-      document.querySelector('span[data-hours]').textContent = hours
-        .toString()
-        .padStart(2, '0');
-      document.querySelector('span[data-minutes]').textContent = minutes
-        .toString()
-        .padStart(2, '0');
-      document.querySelector('span[data-seconds]').textContent = seconds
-        .toString()
-        .padStart(2, '0');
+      updateDate(userDate);
 
       if (timeDiff === 0) {
         clearInterval(timer);
+        button.removeAttribute('disabled');
         iziToast.show({
           title: '✅',
           message: `Time is left`,
@@ -86,3 +85,14 @@ function setTimer(userDate) {
 button.addEventListener('click', () => {
   setTimer(userSelectedDate);
 });
+
+function updateDate(userDate) {
+  const todayDate = new Date();
+  const timeDiff = Math.max(userDate.getTime() - todayDate.getTime(), 0);
+  const { days, hours, minutes, seconds } = convertMs(timeDiff);
+
+  spanDays.textContent = days.toString().padStart(2, '0');
+  spanHours.textContent = hours.toString().padStart(2, '0');
+  spanMinutes.textContent = minutes.toString().padStart(2, '0');
+  spanSeconds.textContent = seconds.toString().padStart(2, '0');
+}
