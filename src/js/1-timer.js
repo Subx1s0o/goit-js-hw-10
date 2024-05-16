@@ -28,16 +28,24 @@ const spanMinutes = document.querySelector('span[data-minutes]');
 const spanSeconds = document.querySelector('span[data-seconds]');
 
 let userSelectedDate;
-
+const todayDate = new Date();
 const options = {
   enableTime: true,
   time_24hr: true,
-  defaultDate: null,
+  defaultDate: todayDate,
   minuteIncrement: 1,
 
   onClose(SelectedDate) {
-    userSelectedDate = SelectedDate[0];
-    if (userSelectedDate !== undefined) {
+    if (SelectedDate[0].getTime() <= todayDate.getTime()) {
+      iziToast.show({
+        title: '❌',
+        message: `Please choose the date in the future.`,
+        messageColor: 'white',
+        backgroundColor: '#E25757',
+        position: 'topRight',
+      });
+    } else {
+      userSelectedDate = SelectedDate[0];
       button.removeAttribute('disabled');
     }
   },
@@ -46,20 +54,18 @@ const options = {
 flatpickr(mainInp, options);
 
 function setTimer(userDate) {
-  const todayDate = new Date();
-  let timeDiff;
-
-  if (userDate !== undefined && userDate.getTime() >= todayDate.getTime()) {
+  if (userDate !== undefined) {
     button.setAttribute('disabled', '');
-    updateDate(userDate);
+    const currentTime = Date.now();
+    const timeDiff = userDate.getTime() - currentTime;
+    updateDate(timeDiff);
 
     const timer = setInterval(() => {
-      const todayDate = new Date();
-      timeDiff = Math.max(userDate.getTime() - todayDate.getTime(), 0);
+      const currentTime = Date.now();
+      const timeDiff = userDate.getTime() - currentTime;
+      updateDate(timeDiff);
 
-      updateDate(userDate);
-
-      if (timeDiff === 0) {
+      if (timeDiff <= 0) {
         clearInterval(timer);
         button.removeAttribute('disabled');
         iziToast.show({
@@ -71,14 +77,6 @@ function setTimer(userDate) {
         });
       }
     }, 1000);
-  } else {
-    iziToast.show({
-      title: '❌',
-      message: `Please choose the date in the future.`,
-      messageColor: 'white',
-      backgroundColor: '#E25757',
-      position: 'topRight',
-    });
   }
 }
 
@@ -86,9 +84,7 @@ button.addEventListener('click', () => {
   setTimer(userSelectedDate);
 });
 
-function updateDate(userDate) {
-  const todayDate = new Date();
-  const timeDiff = Math.max(userDate.getTime() - todayDate.getTime(), 0);
+function updateDate(timeDiff) {
   const { days, hours, minutes, seconds } = convertMs(timeDiff);
 
   spanDays.textContent = days.toString().padStart(2, '0');
