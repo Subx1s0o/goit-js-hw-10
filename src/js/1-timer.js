@@ -63,7 +63,6 @@ function setTimer(userDate) {
     const timer = setInterval(() => {
       const currentTime = Date.now();
       const timeDiff = userDate.getTime() - currentTime;
-      updateDate(timeDiff);
 
       if (timeDiff <= 0) {
         clearInterval(timer);
@@ -75,7 +74,9 @@ function setTimer(userDate) {
           backgroundColor: '#57E29A',
           position: 'topRight',
         });
+        return;
       }
+      updateDate(timeDiff);
     }, 1000);
   }
 }
